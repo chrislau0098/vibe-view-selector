@@ -1,0 +1,9 @@
+node_modules
+dist
+.DS_Store
+*.local
+
+# Claude / project meta files
+CLAUDE.md
+Agents.md
+DESIGN.md
