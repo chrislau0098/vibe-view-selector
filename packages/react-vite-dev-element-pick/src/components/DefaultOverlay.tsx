@@ -17,97 +17,40 @@ export const DefaultOverlay: React.FC<DefaultOverlayProps> = ({ info, className 
   const { selector, attributes, sourceLocation, rect } = info
 
   return (
-    <div
-      style={{
-        position: 'fixed',
-        bottom: 16,
-        left: 16,
-        zIndex: 2147483647,
-        background: 'rgba(15, 16, 17, 0.97)',
-        border: '1px solid rgba(255,255,255,0.10)',
-        borderRadius: 10,
-        padding: '12px 14px',
-        minWidth: 260,
-        maxWidth: 420,
-        boxShadow: '0 8px 32px rgba(0,0,0,0.6)',
-        pointerEvents: 'none',
-        fontFamily: '"Geist Variable", -apple-system, system-ui, sans-serif',
-        fontSize: 12,
-        lineHeight: 1.5,
-        color: '#f7f8f8',
-      }}
-      className={className}
-      aria-hidden
-    >
-      {/* Selector */}
-      <div style={{ marginBottom: 8 }}>
+    <div className={className ? `picker-overlay ${className}` : 'picker-overlay'} aria-hidden>
+      <div className="picker-overlay__section">
         <Label>Selector</Label>
-        <code
-          style={{
-            display: 'block',
-            color: '#5e6ad2',
-            wordBreak: 'break-all',
-            fontFamily: '"Geist Mono", "SF Mono", monospace',
-            fontSize: 11,
-          }}
-        >
-          {selector}
-        </code>
+        <code className="picker-overlay__code picker-overlay__code--selector">{selector}</code>
       </div>
 
-      {/* Source location */}
       {sourceLocation && (
-        <div style={{ marginBottom: 8 }}>
+        <div className="picker-overlay__section">
           <Label>Source</Label>
-          <code
-            style={{
-              display: 'block',
-              color: '#a1a1aa',
-              wordBreak: 'break-all',
-              fontFamily: '"Geist Mono", "SF Mono", monospace',
-              fontSize: 11,
-            }}
-          >
+          <code className="picker-overlay__code picker-overlay__code--source">
             {formatPath(sourceLocation.fileName)}:{sourceLocation.lineNumber}
             {sourceLocation.columnNumber > 0 ? `:${sourceLocation.columnNumber}` : ''}
           </code>
         </div>
       )}
 
-      {/* Attributes */}
-      <div style={{ marginBottom: 8 }}>
+      <div className="picker-overlay__section">
         <Label>Attributes</Label>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginTop: 4 }}>
+        <div className="picker-overlay__chips">
           {Object.entries(attributes)
             .filter(([, v]) => v)
             .map(([k, v]) => (
-              <span
-                key={k}
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 3,
-                  background: 'rgba(255,255,255,0.06)',
-                  borderRadius: 4,
-                  padding: '2px 6px',
-                  fontSize: 11,
-                  fontFamily: '"Geist Mono", monospace',
-                }}
-              >
-                <span style={{ color: '#62666d' }}>{k}</span>
-                <span style={{ color: '#f7f8f8' }}>=</span>
-                <span style={{ color: '#a1a1aa', maxWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                  "{v}"
-                </span>
+              <span key={k} className="picker-overlay__chip">
+                <span className="picker-overlay__chip-key">{k}</span>
+                <span className="picker-overlay__chip-separator">=</span>
+                <span className="picker-overlay__chip-value">"{v}"</span>
               </span>
             ))}
         </div>
       </div>
 
-      {/* Rect */}
-      <div>
+      <div className="picker-overlay__section">
         <Label>Rect</Label>
-        <div style={{ color: '#62666d', fontFamily: '"Geist Mono", monospace', fontSize: 11, marginTop: 2 }}>
+        <div className="picker-overlay__rect">
           {Math.round(rect.width)}×{Math.round(rect.height)} @ ({Math.round(rect.left)}, {Math.round(rect.top)})
         </div>
       </div>
@@ -116,18 +59,7 @@ export const DefaultOverlay: React.FC<DefaultOverlayProps> = ({ info, className 
 }
 
 const Label: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <div
-    style={{
-      fontSize: 10,
-      fontWeight: 500,
-      letterSpacing: '0.06em',
-      color: '#62666d',
-      textTransform: 'uppercase',
-      marginBottom: 2,
-    }}
-  >
-    {children}
-  </div>
+  <div className="picker-overlay__label">{children}</div>
 )
 
 /** Shorten absolute file paths to just the last 3 segments */

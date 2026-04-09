@@ -127,71 +127,19 @@ export function FloatTips({ cursorPos, info }: FloatTipsProps) {
       exit={{ opacity: 0, scale: 0.88 }}
       transition={{ duration: 0.08, ease: 'easeOut' }}
       style={{
-        position: 'fixed',
         top,
         left,
-        zIndex: 2147483647,
-        pointerEvents: 'none',
-        maxWidth: LABEL_W,
-        minHeight: LABEL_H,
-        background: 'rgba(255,255,255,0.96)',
-        borderRadius: 10,
-        padding: '6px 12px',
-        display: 'flex',
-        alignItems: 'center',
-        fontFamily: '"Geist Variable", -apple-system, system-ui, sans-serif',
-        fontSize: 14,
-        fontWeight: 500,
-        color: '#1f2329',
-        boxSizing: 'border-box',
-        boxShadow: '0 2px 4px -4px rgba(31, 35, 41, 0.02), 0 4px 8px rgba(31, 35, 41, 0.02), 0 4px 16px 4px rgba(31, 35, 41, 0.03)',
-        transformOrigin: 'top left',
       }}
+      className="picker-float-tips"
     >
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 6,
-          width: '100%',
-          minWidth: 0,
-          lineHeight: '22px',
-          whiteSpace: 'nowrap',
-        }}
-      >
-        <span
-          style={{
-            flexShrink: 0,
-            color: '#1f2329',
-            fontWeight: 500,
-          }}
-        >
-          {tagLabel}
-        </span>
+      <div className="picker-float-tips__content">
+        <span className="picker-float-tips__tag">{tagLabel}</span>
 
         {textLabel ? (
-          <span
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              flex: 1,
-              minWidth: 0,
-              color: '#646a73',
-              fontWeight: 400,
-            }}
-          >
-            <span style={{ flexShrink: 0 }}>"</span>
-            <span
-              style={{
-                flex: 1,
-                minWidth: 0,
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-              }}
-            >
-              {textLabel}
-            </span>
-            <span style={{ flexShrink: 0 }}>"</span>
+          <span className="picker-float-tips__text">
+            <span className="picker-float-tips__quote">"</span>
+            <span className="picker-float-tips__preview">{textLabel}</span>
+            <span className="picker-float-tips__quote">"</span>
           </span>
         ) : null}
       </div>

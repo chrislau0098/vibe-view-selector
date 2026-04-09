@@ -1,0 +1,90 @@
+:root {
+  --vv-font-sans: "Geist Variable", -apple-system, system-ui, "SF Pro Display", "Segoe UI", sans-serif;
+  --vv-font-mono: "Geist Mono", "SF Mono", "SFMono-Regular", ui-monospace, monospace;
+  --vv-toolbar-height: 48px;
+}
+
+body:not([data-theme]),
+body[data-theme="dark"] {
+  color-scheme: dark;
+  --vv-color-background: #08090a;
+  --vv-color-surface: #0f1011;
+  --vv-color-surface-elevated: #191a1b;
+  --vv-color-surface-muted: #131416;
+  --vv-color-border: rgba(255, 255, 255, 0.06);
+  --vv-color-border-strong: rgba(255, 255, 255, 0.1);
+  --vv-color-text-primary: #f7f8f8;
+  --vv-color-text-secondary: #a1a1aa;
+  --vv-color-text-tertiary: #62666d;
+  --vv-color-accent: #5e6ad2;
+  --vv-color-accent-soft: rgba(94, 106, 210, 0.16);
+  --vv-color-accent-contrast: #ffffff;
+  --vv-color-picker-highlight-border: #4c88ff;
+  --vv-color-picker-highlight-fill: rgba(20, 86, 240, 0.08);
+  --vv-color-picker-float-tips-background: #292929;
+  --vv-color-input-background: #0f1011;
+  --vv-color-panel-backdrop: rgba(8, 9, 10, 0.92);
+  --vv-shadow-soft: 0 20px 48px rgba(0, 0, 0, 0.28);
+  --vv-shadow-overlay: 0 24px 64px rgba(0, 0, 0, 0.42);
+}
+
+body[data-theme="light"] {
+  color-scheme: light;
+  --vv-color-background: #ffffff;
+  --vv-color-surface: #f4f4f5;
+  --vv-color-surface-elevated: #ffffff;
+  --vv-color-surface-muted: #f4f4f5;
+  --vv-color-border: rgba(0, 0, 0, 0.06);
+  --vv-color-border-strong: #e4e4e7;
+  --vv-color-text-primary: #09090b;
+  --vv-color-text-secondary: #52525b;
+  --vv-color-text-tertiary: #a1a1aa;
+  --vv-color-accent: #5e6ad2;
+  --vv-color-accent-soft: rgba(94, 106, 210, 0.1);
+  --vv-color-accent-contrast: #ffffff;
+  --vv-color-picker-highlight-border: var(--vv-color-accent);
+  --vv-color-picker-highlight-fill: var(--vv-color-accent-soft);
+  --vv-color-picker-float-tips-background: color-mix(in srgb, var(--vv-color-surface-elevated) 94%, transparent);
+  --vv-color-input-background: #ffffff;
+  --vv-color-panel-backdrop: rgba(255, 255, 255, 0.92);
+  --vv-shadow-soft: 0 20px 48px rgba(15, 23, 42, 0.08);
+  --vv-shadow-overlay: 0 24px 64px rgba(15, 23, 42, 0.12);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-height: 100vh;
+}
+
+body {
+  margin: 0;
+  background: var(--vv-color-background);
+  color: var(--vv-color-text-primary);
+  font-family: var(--vv-font-sans);
+  font-feature-settings: "cv01", "ss03";
+  text-rendering: optimizeLegibility;
+  transition: background-color 220ms ease-out, color 220ms ease-out;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+::selection {
+  background: var(--vv-color-accent-soft);
+}

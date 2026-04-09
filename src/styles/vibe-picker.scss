@@ -1,0 +1,95 @@
+.vibe-input-panel {
+  z-index: 2147483647;
+  overflow: hidden;
+  padding-top: 12px;
+  border: 1px solid var(--vv-color-border-strong);
+  border-radius: 16px;
+  background: var(--vv-color-surface-elevated);
+  box-shadow: var(--vv-shadow-overlay);
+}
+
+.vibe-input-panel__tag {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 0 12px 8px;
+}
+
+.vibe-input-panel__tag-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 24px;
+  padding: 2px 8px;
+  border: 1px solid var(--vv-color-border-strong);
+  border-radius: 6px;
+  background: var(--vv-color-surface);
+  color: var(--vv-color-text-primary);
+}
+
+.vibe-input-panel__tag-text {
+  font-size: 12px;
+  line-height: 20px;
+  white-space: nowrap;
+  color: var(--vv-color-text-primary);
+}
+
+.vibe-input-panel__body {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 0 12px 12px;
+}
+
+.vibe-input-panel__field {
+  display: flex;
+  align-items: stretch;
+  flex: 1;
+  min-width: 0;
+  align-self: stretch;
+}
+
+.vibe-input-panel__textarea {
+  width: 100%;
+  min-height: 28px;
+  max-height: 120px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--vv-color-text-primary);
+  line-height: 22px;
+  resize: none;
+  overflow: auto;
+  box-shadow: none;
+}
+
+.vibe-input-panel__textarea::placeholder {
+  color: var(--vv-color-text-tertiary);
+}
+
+.vibe-input-panel__textarea:focus-visible {
+  outline: none;
+}
+
+.vibe-input-panel__send {
+  width: 28px;
+  height: 28px;
+  padding: 8px 7px 8px 9px;
+  border: 0;
+  border-radius: 999px;
+  flex-shrink: 0;
+  background: var(--vv-color-border-strong);
+  color: var(--vv-color-accent-contrast);
+  cursor: not-allowed;
+  transition: transform 160ms ease-out, background-color 160ms ease-out, opacity 160ms ease-out;
+}
+
+.vibe-input-panel__send[data-can-send="true"] {
+  background: var(--vv-color-accent);
+  cursor: pointer;
+}
+
+.vibe-input-panel__send[data-can-send="true"]:hover {
+  transform: translateY(-1px);
+}

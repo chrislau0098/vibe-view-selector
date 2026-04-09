@@ -2,29 +2,6 @@ import { motion } from 'framer-motion'
 import type { PickerHighlightProps } from '../types'
 
 // ---------------------------------------------------------------------------
-// Constants
-// ---------------------------------------------------------------------------
-
-/** Core blue used by the official reference picker UI. */
-const BLUE = '#1456F0'
-
-/** Hover state styles for the official reference highlight. */
-const HOVER_STYLE = {
-  border: `1px solid ${BLUE}`,
-  background: 'rgba(20, 86, 240, 0.08)',
-  boxShadow: 'none',
-  borderRadius: 4,
-} as const
-
-/** Selected state styles for the official reference highlight. */
-const SELECTED_STYLE = {
-  border: `1px solid ${BLUE}`,
-  background: 'rgba(20, 86, 240, 0.08)',
-  boxShadow: 'none',
-  borderRadius: 4,
-} as const
-
-// ---------------------------------------------------------------------------
 // PickerHighlight
 // ---------------------------------------------------------------------------
 
@@ -49,11 +26,11 @@ export function PickerHighlight({
   rect,
   isSelected = false,
 }: PickerHighlightProps) {
-  const styles = isSelected ? SELECTED_STYLE : HOVER_STYLE
-
   return (
     <motion.div
       aria-hidden
+      className="picker-highlight"
+      data-selected={isSelected}
       animate={{
         top: rect.top,
         left: rect.left,
@@ -77,12 +54,10 @@ export function PickerHighlight({
       }}
       exit={{ opacity: 0, transition: { duration: 0.1 } }}
       style={{
-        position: 'fixed',
-        pointerEvents: 'none',
-        zIndex: 2147483646,
-        boxSizing: 'border-box',
-        ...styles,
-        transition: 'border 140ms ease-out, background 220ms ease-out',
+        top: rect.top,
+        left: rect.left,
+        width: rect.width,
+        height: rect.height,
       }}
     />
   )

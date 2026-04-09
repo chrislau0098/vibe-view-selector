@@ -135,6 +135,11 @@ export function VibeInputPanel({
       e.preventDefault()
       if (canSend) onSend()
     }
+
+    if (e.key === 'Escape') {
+      e.preventDefault()
+      onClose()
+    }
   }
 
   return (
@@ -151,81 +156,22 @@ export function VibeInputPanel({
         top,
         left,
         width,
-        zIndex: 2147483647,
-        background: '#ffffff',
-        border: '0.5px solid #d0d3d6',
-        borderRadius: 16,
-        boxShadow: '0 2px 4px rgba(31, 35, 41, 0.02), 0 4px 8px rgba(31, 35, 41, 0.02), 0 4px 16px rgba(31, 35, 41, 0.03)',
-        paddingTop: 12,
-        fontFamily: '"Geist Variable", -apple-system, system-ui, sans-serif',
-        boxSizing: 'border-box',
-        overflow: 'hidden',
       }}
+      className="vibe-input-panel"
     >
-      {/* ── Tag chip ── */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          paddingLeft: 12,
-          paddingBottom: 8,
-          width: '100%',
-          boxSizing: 'border-box',
-        }}
-      >
-        <div
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 6,
-            background: '#f8f9fa',
-            border: '1px solid #dee0e3',
-            borderRadius: 6,
-            padding: '2px 6px',
-            minHeight: 20,
-            boxSizing: 'border-box',
-          }}
-        >
+      <div className="vibe-input-panel__tag">
+        <div className="vibe-input-panel__tag-badge">
           <MousePointer2
             size={12}
             strokeWidth={1.8}
-            color="#2b2f36"
             style={{ flexShrink: 0 }}
           />
-          <span
-            style={{
-              fontSize: 12,
-              lineHeight: '20px',
-              color: '#1f2329',
-              fontWeight: 400,
-              whiteSpace: 'nowrap',
-            }}
-          >
-            {tagLabel}
-          </span>
+          <span className="vibe-input-panel__tag-text">{tagLabel}</span>
         </div>
       </div>
 
-      {/* ── Input row ── */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 12,
-          padding: '0 12px 12px',
-          width: '100%',
-          boxSizing: 'border-box',
-        }}
-      >
-        <div
-          style={{
-            flex: 1,
-            minWidth: 0,
-            display: 'flex',
-            alignItems: 'stretch',
-            alignSelf: 'stretch',
-          }}
-        >
+      <div className="vibe-input-panel__body">
+        <div className="vibe-input-panel__field">
           <Textarea
             ref={textareaRef}
             value={message}
@@ -233,22 +179,7 @@ export function VibeInputPanel({
             onKeyDown={handleKeyDown}
             placeholder="请描述希望修改的内容"
             rows={1}
-            className="focus-visible:ring-0 focus-visible:ring-offset-0"
-            style={{
-              minHeight: 28,
-              maxHeight: 120,
-              resize: 'none',
-              border: 'none',
-              background: 'transparent',
-              padding: 0,
-              fontSize: 14,
-              lineHeight: '22px',
-              color: '#1f2329',
-              width: '100%',
-              boxSizing: 'border-box',
-              fontFamily: '"PingFang SC", "Geist Variable", -apple-system, system-ui, sans-serif',
-              overflow: 'auto',
-            }}
+            className="vibe-input-panel__textarea focus-visible:ring-0 focus-visible:ring-offset-0"
           />
         </div>
 
@@ -256,18 +187,10 @@ export function VibeInputPanel({
           onClick={onSend}
           disabled={!canSend}
           aria-label="Send edit request"
-          style={{
-            width: 28,
-            height: 28,
-            borderRadius: 20,
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '8px 7px 8px 9px',
-            background: canSend ? '#1456F0' : 'rgba(31, 35, 41, 0.15)',
-            color: '#ffffff',
-            cursor: canSend ? 'pointer' : 'not-allowed',
-            flexShrink: 0,
-          }}
+          type="button"
+          variant="ghost"
+          data-can-send={canSend}
+          className="vibe-input-panel__send"
         >
           <SendHorizontal size={13} strokeWidth={2.2} />
         </Button>
