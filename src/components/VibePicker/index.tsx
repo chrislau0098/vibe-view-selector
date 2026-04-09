@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useCallback, useRef, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import { AnimatePresence } from 'framer-motion'
 import { ElementPicker, FloatTips, PickerHighlight } from 'react-vite-dev-element-pick'
@@ -16,7 +16,7 @@ interface VibePickerProps {
    */
   status: PickerStatus
   /** The website content to wrap */
-  children: React.ReactNode
+  children: ReactNode
 }
 
 // ---------------------------------------------------------------------------

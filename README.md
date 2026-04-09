@@ -23,6 +23,34 @@ npm run build
 http://localhost:5173
 ```
 
+## 主题与样式系统
+
+当前仓库已经把主要视觉样式从组件内联 `style` 重构为语义化 className + SCSS：
+
+- `src/styles/`
+  Demo 页面、Toolbar、Vibe 输入面板的主题样式入口。
+- `packages/react-vite-dev-element-pick/src/styles/picker-ui.scss`
+  选择器库默认参考 UI 的主题样式。
+
+主题切换约定：
+
+- `body:not([data-theme])`
+  默认按 dark mode 渲染。
+- `body[data-theme="dark"]`
+  显式启用 dark mode。
+- `body[data-theme="light"]`
+  显式启用 light mode。
+
+Demo 顶部 Toolbar 已经内置 `LM` / `DM` 开关，会直接切换 `document.body.dataset.theme`，用于演示接入效果。
+
+如果 Host 自己接入库，也可以直接在宿主侧控制：
+
+```tsx
+document.body.dataset.theme = 'dark'
+// or
+document.body.dataset.theme = 'light'
+```
+
 ## Host 接入方式
 
 当前仓库里，选择器库通过源码 alias 的方式引入：
@@ -88,9 +116,15 @@ import type { FloatTipsProps, PickerHighlightProps } from 'react-vite-dev-elemen
 组件职责：
 
 - `FloatTips`
-  白色浮动标签，负责展示 `tag.class`、文本预览、双引号、省略号，以及跟随光标移动时的视口边界处理。
+  主题化浮动标签，负责展示 `tag.class`、文本预览、双引号、省略号，以及跟随光标移动时的视口边界处理。
 - `PickerHighlight`
-  蓝色元素高亮框，包含 4px 圆角、1px 描边、8% 填充，以及基于 Motion 的过渡动画参数。
+  主题化元素高亮框，包含 4px 圆角、1px 描边、8% 填充，以及基于 Motion 的过渡动画参数。
+
+默认参考 UI 会自动读取全局主题变量：
+
+- dark mode 下，高亮描边使用 `#4C88FF`
+- dark mode 下，高亮填充使用 `rgba(20, 86, 240, 0.08)`
+- dark mode 下，`FloatTips` 背景使用 `#292929`
 
 ## Demo 交互说明
 
@@ -135,10 +169,17 @@ packages/react-vite-dev-element-pick/src/
   components/
     FloatTips.tsx
     PickerHighlight.tsx
+  styles/
+    picker-ui.scss
   utils/
 
 src/
   App.tsx
+  styles/
+    app.scss
+    theme.scss
+    toolbar.scss
+    vibe-picker.scss
   components/
     Toolbar.tsx
     VibePicker/
@@ -147,5 +188,6 @@ src/
 ## 说明
 
 - 这个库目前面向 React 18 + Vite 5 的开发环境。
+- 默认主题变量通过 `body[data-theme]` 驱动，适合 portal 渲染的 picker UI。
 - Demo 里通过 `resolveElement` 避免选择过细的内联文本节点。
 - 抽离出的参考 UI 组件目标是“可读、可检查、可直接复制到 Host 工程里继续改造”。

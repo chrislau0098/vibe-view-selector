@@ -12,6 +12,8 @@
  * @packageDocumentation
  */
 
+import './styles/picker-ui.scss'
+
 // Main component
 export { ElementPicker } from './ElementPicker'
 export { FloatTips } from './components/FloatTips'

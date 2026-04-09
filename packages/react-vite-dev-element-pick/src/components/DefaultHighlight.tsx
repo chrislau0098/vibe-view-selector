@@ -17,21 +17,12 @@ export const DefaultHighlight: React.FC<DefaultHighlightProps> = ({ rect, classN
   return (
     <div
       style={{
-        position: 'fixed',
         top: rect.top,
         left: rect.left,
         width: rect.width,
         height: rect.height,
-        pointerEvents: 'none',
-        zIndex: 2147483646,
-        boxSizing: 'border-box',
-        outline: '2px solid #5e6ad2',
-        outlineOffset: 1,
-        background: 'rgba(94, 106, 210, 0.08)',
-        borderRadius: 2,
-        transition: 'top 60ms ease-out, left 60ms ease-out, width 60ms ease-out, height 60ms ease-out',
       }}
-      className={className}
+      className={className ? `picker-highlight ${className}` : 'picker-highlight'}
       aria-hidden
     />
   )
