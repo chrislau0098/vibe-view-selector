@@ -1,15 +1,15 @@
 # Vibe View Selector
 
-Frontend demo and reference implementation for a Vibe Coding page-element picker.
+这是一个面向 Vibe Coding 场景的网页元素选择器 Demo，同时也是 `react-vite-dev-element-pick` 的参考实现仓库。
 
-This repository contains two layers:
+仓库主要分成两层：
 
 - `packages/react-vite-dev-element-pick`
-  The reusable picker library. It provides DOM element hover/click inspection, structured `ElementInfo`, and customizable overlay / highlight renderers.
+  可复用的元素选择器库，负责元素 hover / click 采集、`ElementInfo` 结构化输出，以及自定义 overlay / highlight 渲染。
 - `src/components/VibePicker`
-  The demo integration used by the landing-page prototype. It shows the editing flow used by the Host product: enter edit mode, hover elements, lock selection on click, then open an edit prompt panel.
+  面向 Host 产品的 Demo 集成层，演示完整的编辑链路：进入编辑态、悬停网页元素、点击锁定元素、唤起输入框。
 
-## Quick Start
+## 快速开始
 
 ```bash
 npm install
@@ -17,22 +17,22 @@ npm run dev
 npm run build
 ```
 
-Default dev URL:
+默认开发地址：
 
 ```txt
 http://localhost:5173
 ```
 
-## Host Integration
+## Host 接入方式
 
-The picker library is source-linked inside this repo and is imported with the alias below:
+当前仓库里，选择器库通过源码 alias 的方式引入：
 
 ```tsx
 import { ElementPicker } from 'react-vite-dev-element-pick'
 import type { ElementInfo, PickerStatus } from 'react-vite-dev-element-pick'
 ```
 
-Minimal usage:
+最小接入示例：
 
 ```tsx
 import { useState } from 'react'
@@ -54,65 +54,78 @@ export function HostPage() {
 }
 ```
 
-Common props:
+常用能力：
 
-- `status`: enables or disables picking.
-- `onHover(info)`: called when the hovered target changes.
-- `onClick(info)`: called when the user clicks an element.
-- `onChange(info | null)`: called when the current target becomes another element or clears.
-- `resolveElement(el)`: optional target normalization hook before building `ElementInfo`.
-- `exclude`: selectors that should never be pickable, for example your own overlay UI.
-- `highlight(props)` / `overlay(props)`: render custom picker UI.
+- `status`
+  控制是否进入元素选择模式。
+- `onHover(info)`
+  当 hover 元素变化时触发。
+- `onClick(info)`
+  当用户点击某个元素时触发。
+- `onChange(info | null)`
+  当前目标元素变化或清空时触发。
+- `resolveElement(el)`
+  在构建 `ElementInfo` 之前，对原始 DOM target 做一层归一化处理。
+- `exclude`
+  声明不允许被选中的元素选择器，通常用于排除宿主自己的 UI。
+- `highlight(props)` / `overlay(props)`
+  自定义高亮框和浮层的渲染方式。
 
-## Official Reference UI
+## 官方参考 UI
 
-These two components were extracted so Host engineers can inspect, copy, or reuse the exact visual layer used in the demo:
+这两个组件已经从 Demo 中抽离出来，方便 Host 研发直接检查、复制或复用：
 
 - `packages/react-vite-dev-element-pick/src/components/FloatTips.tsx`
 - `packages/react-vite-dev-element-pick/src/components/PickerHighlight.tsx`
 
-Public exports:
+公开导出方式：
 
 ```tsx
 import { FloatTips, PickerHighlight } from 'react-vite-dev-element-pick'
 import type { FloatTipsProps, PickerHighlightProps } from 'react-vite-dev-element-pick'
 ```
 
-What they cover:
+组件职责：
 
 - `FloatTips`
-  White floating hover label with tag/class formatting, quoted text preview, ellipsis handling, and viewport-aware cursor-follow positioning.
+  白色浮动标签，负责展示 `tag.class`、文本预览、双引号、省略号，以及跟随光标移动时的视口边界处理。
 - `PickerHighlight`
-  Blue element highlight with 4px radius, 1px border, 8% fill, and Motion-based transition settings tuned for hover switching.
+  蓝色元素高亮框，包含 4px 圆角、1px 描边、8% 填充，以及基于 Motion 的过渡动画参数。
 
-## Demo Flow
+## Demo 交互说明
 
-The main demo orchestration lives in `src/components/VibePicker/index.tsx`.
+主交互编排位于 `src/components/VibePicker/index.tsx`。
 
-It adds product-specific behavior on top of the base picker:
+它在基础 `ElementPicker` 之上增加了更贴近产品的行为：
 
-- hover gap stabilization between sibling elements
-- selection lock after click
-- floating input panel after selection
-- outside-click close when prompt content is empty
-- scroll lock while the prompt is open
+- 元素间空隙的 hover 稳定策略，避免在 sibling gap 中抖动选中父级容器
+- 点击后锁定当前选择，不再随着鼠标移动切换目标
+- 点击后在选中元素附近唤起输入框
+- 输入框为空时，点击页面其他区域可关闭
+- 输入框打开时禁用页面滚动
 
-This demo code is intentionally separate from the shared package so Host teams can choose how much UX logic they want to adopt.
+这部分逻辑故意保留在 Demo 层，而不是直接塞进共享库中，方便 Host 团队按自身产品需求决定保留多少行为。
 
-## ElementInfo Shape
+## ElementInfo 结构
 
-Every hover / click callback receives a structured `ElementInfo` object that includes:
+所有 hover / click 回调都会收到结构化的 `ElementInfo`：
 
-- `element`: raw DOM node
-- `selector`: CSS selector string
-- `attributes`: normalized HTML attributes
-- `sourceLocation`: React Fiber debug source when available
-- `rect`: bounding rectangle snapshot
-- `margins`: computed CSS margins
+- `element`
+  原始 DOM 节点
+- `selector`
+  当前元素对应的 CSS selector
+- `attributes`
+  归一化后的 HTML 属性集合
+- `sourceLocation`
+  React Fiber 调试信息可用时，对应的源码位置信息
+- `rect`
+  元素当前的 bounding rect 快照
+- `margins`
+  元素当前的 CSS margin 快照
 
-Type definitions live in `packages/react-vite-dev-element-pick/src/types.ts`.
+类型定义在 `packages/react-vite-dev-element-pick/src/types.ts`。
 
-## Repository Structure
+## 仓库结构
 
 ```txt
 packages/react-vite-dev-element-pick/src/
@@ -131,8 +144,8 @@ src/
     VibePicker/
 ```
 
-## Notes
+## 说明
 
-- The package is intended for React 18 + Vite 5 development environments.
-- The demo host uses `resolveElement` to avoid selecting overly fine-grained inline nodes.
-- The exported reference UI components are meant to be readable and copy-friendly for downstream integration work.
+- 这个库目前面向 React 18 + Vite 5 的开发环境。
+- Demo 里通过 `resolveElement` 避免选择过细的内联文本节点。
+- 抽离出的参考 UI 组件目标是“可读、可检查、可直接复制到 Host 工程里继续改造”。
