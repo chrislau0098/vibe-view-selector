@@ -14,6 +14,8 @@
 
 // Main component
 export { ElementPicker } from './ElementPicker'
+export { FloatTips } from './components/FloatTips'
+export { PickerHighlight } from './components/PickerHighlight'
 
 // Types — export everything consumers may need
 export type {
@@ -24,6 +26,8 @@ export type {
   PickerStatus,
   OverlayRenderProps,
   HighlightRenderProps,
+  FloatTipsProps,
+  PickerHighlightProps,
   ElementPickerProps,
   ElementPickerHandle,
 } from './types'

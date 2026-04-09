@@ -112,6 +112,42 @@ export interface HighlightRenderProps {
   info: ElementInfo
 }
 
+/**
+ * Props for the official `FloatTips` reference component.
+ *
+ * This type is public so host teams can inspect or mirror the same contract
+ * when copying the reference implementation into their own codebase.
+ *
+ * @example
+ * ```tsx
+ * <FloatTips cursorPos={{ x: 120, y: 96 }} info={info} />
+ * ```
+ */
+export interface FloatTipsProps {
+  /** Current mouse cursor coordinates in viewport space */
+  cursorPos: { x: number; y: number }
+  /** Info about the currently hovered element */
+  info: ElementInfo
+}
+
+/**
+ * Props for the official `PickerHighlight` reference component.
+ *
+ * This type is public so host teams can inspect or mirror the same contract
+ * when copying the reference implementation into their own codebase.
+ *
+ * @example
+ * ```tsx
+ * <PickerHighlight rect={info.rect} isSelected={false} />
+ * ```
+ */
+export interface PickerHighlightProps {
+  /** Bounding rect of the target element */
+  rect: ElementRect
+  /** Whether the highlight represents a locked/selected element */
+  isSelected?: boolean
+}
+
 // ---------------------------------------------------------------------------
 // Component props
 // ---------------------------------------------------------------------------

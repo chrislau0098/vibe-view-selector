@@ -1,9 +1,8 @@
 import { useRef, useEffect, type KeyboardEvent } from 'react'
 import { motion } from 'framer-motion'
-import { X, Send } from 'lucide-react'
+import { MousePointer2, SendHorizontal } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
-import { Badge } from '@/components/ui/badge'
 import type { ElementInfo } from 'react-vite-dev-element-pick'
 
 // ---------------------------------------------------------------------------
@@ -29,31 +28,48 @@ interface VibeInputPanelProps {
 
 /**
  * Computes the fixed position for the input panel:
- *  - Prefers appearing **below** the selected element (8px gap)
- *  - Falls back to **above** when there is less than 200px of space below
- *  - Horizontally left-aligned to the element, clamped to viewport margins
+ *  - Prefers appearing from the **bottom-right corner** of the selected element
+ *  - Clamps horizontally / vertically to keep the panel inside the viewport
+ *  - For oversized selections, anchors from the visible bottom-right edge
  *
  * @param rect      - Bounding rect of the selected element
- * @returns CSS `top` and `left` values in pixels
+ * @returns CSS `top`, `left`, and `width` values in pixels
  */
-function computePanelPosition(rect: ElementInfo['rect']): { top: number; left: number } {
-  const PANEL_MIN_W = 340
-  const GAP = 8
+function computePanelPosition(rect: ElementInfo['rect']): { top: number; left: number; width: number } {
+  const PANEL_TARGET_W = 340
+  const GAP = 10
   const PANEL_ESTIMATED_H = 168
   const MARGIN = 16
 
-  const spaceBelow = window.innerHeight - rect.bottom
-  const top =
-    spaceBelow >= 200
-      ? rect.bottom + GAP
-      : rect.top - PANEL_ESTIMATED_H - GAP
+  const width = Math.min(PANEL_TARGET_W, window.innerWidth - MARGIN * 2)
+  const visibleTop = Math.max(MARGIN, rect.top)
+  const visibleBottom = Math.min(window.innerHeight - MARGIN, rect.bottom)
+  const visibleRight = Math.min(window.innerWidth - MARGIN, rect.right)
+
+  const preferredLeft = visibleRight - width
+  const preferredTop = visibleBottom + GAP
 
   const left = Math.max(
     MARGIN,
-    Math.min(rect.left, window.innerWidth - PANEL_MIN_W - MARGIN)
+    Math.min(preferredLeft, window.innerWidth - width - MARGIN)
   )
 
-  return { top: Math.max(MARGIN, top), left }
+  const top = Math.max(
+    MARGIN,
+    Math.min(preferredTop, window.innerHeight - PANEL_ESTIMATED_H - MARGIN)
+  )
+
+  // If the selected element is mostly below the viewport fold, bias upward so
+  // the panel still feels attached to the visible bottom-right of the target.
+  if (rect.bottom > window.innerHeight - MARGIN && visibleTop < visibleBottom) {
+    return {
+      top: Math.max(MARGIN, visibleBottom - PANEL_ESTIMATED_H),
+      left,
+      width,
+    }
+  }
+
+  return { top, left, width }
 }
 
 /**
@@ -78,12 +94,12 @@ function buildBadgeLabel(info: ElementInfo): string {
  * Floating input panel that appears after the user clicks an element in pick mode.
  *
  * **Layout (top → bottom):**
- * 1. Header row — element badge (tag.class) + close (X) button
- * 2. Textarea — free-form edit description, auto-focused on mount
- * 3. Footer row — Send button (disabled when empty; Ctrl/Cmd+Enter shortcut)
+ * 1. Light tag chip — selected element label
+ * 2. One-piece input row — textarea + circular send button
  *
  * **Positioning:** Computed from the element's bounding rect at mount time.
- * Prefers below the element; flips above if space is insufficient.
+ * Anchors to the selected element's bottom-right corner, then clamps into the
+ * viewport so the panel remains visible.
  *
  * **Portal:** Parent (`VibePicker`) renders this into `document.body`.
  *
@@ -101,8 +117,8 @@ export function VibeInputPanel({
   onClose,
 }: VibeInputPanelProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null)
-  const { top, left } = computePanelPosition(info.rect)
-  const badgeLabel = buildBadgeLabel(info)
+  const { top, left, width } = computePanelPosition(info.rect)
+  const tagLabel = buildBadgeLabel(info)
   const canSend = message.trim().length > 0
 
   // Auto-focus the textarea when the panel mounts
@@ -134,117 +150,126 @@ export function VibeInputPanel({
         position: 'fixed',
         top,
         left,
-        minWidth: 340,
-        maxWidth: 480,
+        width,
         zIndex: 2147483647,
-        // Light surface — matches the light-mode website content
         background: '#ffffff',
-        border: '1px solid rgba(0, 0, 0, 0.10)',
-        borderRadius: 10,
-        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.07)',
-        padding: '14px 16px',
+        border: '0.5px solid #d0d3d6',
+        borderRadius: 16,
+        boxShadow: '0 2px 4px rgba(31, 35, 41, 0.02), 0 4px 8px rgba(31, 35, 41, 0.02), 0 4px 16px rgba(31, 35, 41, 0.03)',
+        paddingTop: 12,
         fontFamily: '"Geist Variable", -apple-system, system-ui, sans-serif',
         boxSizing: 'border-box',
+        overflow: 'hidden',
       }}
     >
-      {/* ── Header: element badge + close ── */}
+      {/* ── Tag chip ── */}
       <div
         style={{
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'space-between',
-          marginBottom: 10,
-        }}
-      >
-        <Badge
-          style={{
-            fontFamily: '"Geist Mono", "SF Mono", monospace',
-            fontSize: 11,
-            fontWeight: 500,
-            color: '#1456F0',
-            background: 'rgba(20, 86, 240, 0.08)',
-            border: '1px solid rgba(20, 86, 240, 0.22)',
-            borderRadius: 4,
-            padding: '2px 8px',
-            letterSpacing: '0.01em',
-          }}
-        >
-          {badgeLabel}
-        </Badge>
-
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={onClose}
-          style={{
-            width: 24,
-            height: 24,
-            color: '#9ca3af',
-            flexShrink: 0,
-          }}
-          className="hover:text-gray-700 hover:bg-gray-100"
-        >
-          <X size={14} strokeWidth={2} />
-        </Button>
-      </div>
-
-      {/* ── Textarea ── */}
-      <Textarea
-        ref={textareaRef}
-        value={message}
-        onChange={(e) => onMessageChange(e.target.value)}
-        onKeyDown={handleKeyDown}
-        placeholder="描述你想修改的内容..."
-        className="focus-visible:ring-[#1456F0] focus-visible:ring-offset-0"
-        style={{
-          minHeight: 72,
-          resize: 'none',
-          fontSize: 13,
-          lineHeight: 1.55,
-          color: '#111827',
-          background: 'rgba(0, 0, 0, 0.025)',
-          border: '1px solid rgba(0, 0, 0, 0.09)',
-          borderRadius: 6,
-          padding: '10px 12px',
+          paddingLeft: 12,
+          paddingBottom: 8,
           width: '100%',
           boxSizing: 'border-box',
-          fontFamily: '"Geist Variable", -apple-system, system-ui, sans-serif',
         }}
-      />
+      >
+        <div
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 6,
+            background: '#f8f9fa',
+            border: '1px solid #dee0e3',
+            borderRadius: 6,
+            padding: '2px 6px',
+            minHeight: 20,
+            boxSizing: 'border-box',
+          }}
+        >
+          <MousePointer2
+            size={12}
+            strokeWidth={1.8}
+            color="#2b2f36"
+            style={{ flexShrink: 0 }}
+          />
+          <span
+            style={{
+              fontSize: 12,
+              lineHeight: '20px',
+              color: '#1f2329',
+              fontWeight: 400,
+              whiteSpace: 'nowrap',
+            }}
+          >
+            {tagLabel}
+          </span>
+        </div>
+      </div>
 
-      {/* ── Footer: send button + hint ── */}
+      {/* ── Input row ── */}
       <div
         style={{
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'space-between',
-          marginTop: 10,
+          gap: 12,
+          padding: '0 12px 12px',
+          width: '100%',
+          boxSizing: 'border-box',
         }}
       >
-        {/* Keyboard shortcut hint */}
-        <span style={{ fontSize: 11, color: '#9ca3af' }}>
-          ⌘↵ to send
-        </span>
+        <div
+          style={{
+            flex: 1,
+            minWidth: 0,
+            display: 'flex',
+            alignItems: 'stretch',
+            alignSelf: 'stretch',
+          }}
+        >
+          <Textarea
+            ref={textareaRef}
+            value={message}
+            onChange={(e) => onMessageChange(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder="请描述希望修改的内容"
+            rows={1}
+            className="focus-visible:ring-0 focus-visible:ring-offset-0"
+            style={{
+              minHeight: 28,
+              maxHeight: 120,
+              resize: 'none',
+              border: 'none',
+              background: 'transparent',
+              padding: 0,
+              fontSize: 14,
+              lineHeight: '22px',
+              color: '#1f2329',
+              width: '100%',
+              boxSizing: 'border-box',
+              fontFamily: '"PingFang SC", "Geist Variable", -apple-system, system-ui, sans-serif',
+              overflow: 'auto',
+            }}
+          />
+        </div>
 
         <Button
           onClick={onSend}
           disabled={!canSend}
+          aria-label="Send edit request"
           style={{
-            height: 32,
-            padding: '0 14px',
-            fontSize: 13,
-            fontWeight: 500,
-            borderRadius: 6,
-            display: 'inline-flex',
+            width: 28,
+            height: 28,
+            borderRadius: 20,
             alignItems: 'center',
-            gap: 6,
-            background: canSend ? '#1456F0' : undefined,
-            color: canSend ? '#ffffff' : undefined,
+            justifyContent: 'center',
+            padding: '8px 7px 8px 9px',
+            background: canSend ? '#1456F0' : 'rgba(31, 35, 41, 0.15)',
+            color: '#ffffff',
             cursor: canSend ? 'pointer' : 'not-allowed',
+            flexShrink: 0,
           }}
         >
-          <Send size={13} strokeWidth={2} />
-          Send
+          <SendHorizontal size={13} strokeWidth={2.2} />
         </Button>
       </div>
     </motion.div>
